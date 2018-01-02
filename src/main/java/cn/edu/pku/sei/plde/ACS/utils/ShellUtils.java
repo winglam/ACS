@@ -87,8 +87,54 @@ public class ShellUtils {
         Process process= Runtime.getRuntime().exec(cmd);
         return ShellUtils.getShellOut(process);
     };
-}
 
+    public static String shellRunGobbler(List<String> args) throws IOException{
+        String fileName;
+        String cmd;
+        if (System.getProperty("os.name").toLowerCase().startsWith("win")){
+            fileName = Config.TEMP_FILES_PATH+"/args.bat";
+            cmd = Config.TEMP_FILES_PATH +"/args.bat";
+        }
+        else {
+            fileName = Config.TEMP_FILES_PATH +"/args.sh";
+            cmd = "bash " + Config.TEMP_FILES_PATH +"/args.sh";
+        }
+        File batFile = new File(fileName);
+        if (!batFile.exists()){
+            boolean result = batFile.createNewFile();
+            if (!result){
+                throw new IOException("Cannot Create bat file:" + fileName);
+            }
+        }
+        FileOutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(batFile);
+            for (String arg: args){
+                outputStream.write(arg.getBytes());
+            }
+        } catch (IOException e){
+            if (outputStream != null){
+                outputStream.close();
+            }
+        }
+        batFile.deleteOnExit();
+
+        Runtime rt = Runtime.getRuntime();
+        Process proc = rt.exec(cmd);
+
+        BufferedReader stdInput = new BufferedReader(new
+                InputStreamReader(proc.getInputStream()));
+
+        // read the output from the command
+        StringBuilder sb = new StringBuilder();
+        String s = null;
+        while ((s = stdInput.readLine()) != null) {
+            sb.append(s);
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+}
 
 class ReadShellProcess implements Callable<String> {
     public Process p;

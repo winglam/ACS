@@ -57,17 +57,17 @@ public class PathUtils {
         String projectName = words[0];
         int bugId = Integer.parseInt(words[1]);
         if(projectName.equals("Math")){
-            if(bugId < 85){
+//            if(bugId < 85){
                 path.add("/target/classes/");
                 path.add("/target/test-classes/");
                 path.add("/src/main/java/");
                 path.add("/src/test/java/");
-            }else{
-                path.add("/target/classes/");
-                path.add("/target/test-classes/");
-                path.add("/src/java/");
-                path.add("/src/test/");
-            }
+//            }else{
+//                path.add("/target/classes/");
+//                path.add("/target/test-classes/");
+//                path.add("/src/java/");
+//                path.add("/src/test/");
+//            }
         }else if(projectName.equals("Time")){
             if(bugId < 12){
                 path.add("/target/classes/");

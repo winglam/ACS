@@ -100,32 +100,70 @@ public class TestUtils {
         }
     }
 
-
-    public static String getDefects4jTestResult(String projectName){
+    public static String getMvnTestResult(String projectName) {
         try {
-            String result = ShellUtils.shellRun(Arrays.asList("cd project\n","cd "+projectName+"\n","defects4j test"));
+//            String result = ShellUtils.shellRunGobbler(Arrays.asList("cd project\n", "cd " + projectName + "\n",
+//                    "JAVA_HOME=/usr/local/development/jdk1.7.0_79" + "\n",
+//                    "ant test" + "\n", "cd ../.." + "\n", "echo \"\" > " + ShellUtils.LOCK_FILE));
+            String result = ShellUtils.shellRunGobbler(Arrays.asList("cd project\n", "cd " + projectName + "\n",
+                    "mvn test"));
             return result;
-        } catch (IOException e){
+        } catch (IOException e) {
             return "";
         }
     }
 
     public static int getFailTestNumInProject(String projectName){
-        String testResult = getDefects4jTestResult(projectName);
+        String testResult = getMvnTestResult(projectName);
         if (testResult.equals("")){//error occurs in run
             return Integer.MAX_VALUE;
         }
-        if (!testResult.contains("Failing tests:")){
+        if (!testResult.contains("Results :")) {
             return Integer.MAX_VALUE;
         }
-        int errorNum = 0;
-        for (String lineString: testResult.split("\n")){
-            if (lineString.contains("Failing tests:")){
-                errorNum =  Integer.valueOf(lineString.split(":")[1].trim());
+        if (testResult.contains("[INFO] BUILD SUCCESS")) {
+            return 0;
+        }
+        String[] results = testResult.split("\n");
+        int count = 0;
+        boolean failTestsFound = false;
+        for (String s : results) {
+            if (s.contains("Failed tests:")) {
+                failTestsFound = true;
+            } else if (failTestsFound && s.contains("Tests run:")) {
+                failTestsFound = false;
+            } else if (failTestsFound && !s.equals("")) {
+                count += 1;
             }
         }
-        return errorNum;
+        return count;
     }
+
+//    public static String getDefects4jTestResult(String projectName) {
+//        try {
+//            String result = ShellUtils.shellRun(Arrays.asList("cd project\n", "cd " + projectName + "\n", "defects4j test"));
+//            return result;
+//        } catch (IOException e) {
+//            return "";
+//        }
+//    }
+//
+//    public static int getFailTestNumInProject(String projectName){
+//        String testResult = getDefects4jTestResult(projectName);
+//        if (testResult.equals("")){//error occurs in run
+//            return Integer.MAX_VALUE;
+//        }
+//        if (!testResult.contains("Failing tests:")){
+//            return Integer.MAX_VALUE;
+//        }
+//        int errorNum = 0;
+//        for (String lineString: testResult.split("\n")){
+//            if (lineString.contains("Failing tests:")){
+//                errorNum =  Integer.valueOf(lineString.split(":")[1].trim());
+//            }
+//        }
+//        return errorNum;
+//    }
 
 
 
