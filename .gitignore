@@ -1,0 +1,9 @@
+.idea/
+.suspicious/
+.temp/
+patch_backup/
+project/
+resultMessage*/
+run.sh
+target/
+patch/
