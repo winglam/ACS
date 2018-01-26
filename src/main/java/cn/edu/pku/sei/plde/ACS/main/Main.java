@@ -116,6 +116,7 @@ public class Main {
             writer.write("project "+project+" "+(result?"Success":"Fail")+" Time:"+format.format(new Date())+"\n");
             writer.close();
         } catch (Exception e){
+            e.printStackTrace();
             result = false;
         }
         if (!result){

@@ -14,6 +14,7 @@ import org.joda.convert.FromString;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -183,22 +184,39 @@ public class MainProcess {
         classSrc = projectDir+"/"+project+paths.get(2);
         testClassSrc = projectDir+"/"+ project + paths.get(3);
         FileUtils.copyDirectory(PATH_OF_DEFECTS4J+project+"/src/test/resources/",System.getProperty("user.dir")+"/src/test");
-        File libPkg = new File(projectDir.getAbsolutePath()+"/"+project+"/lib/");
-        if (libPkg.exists() && libPkg.list() != null){
-            for (String p: libPkg.list()){
-                if (p.endsWith(".jar")){
-                    libPath.add(libPkg.getAbsolutePath()+"/"+p);
+
+        if (PathUtils.projectName.equals("MATH")) {
+            File libPkg = new File(projectDir.getAbsolutePath()+"/"+project+"/lib/");
+            if (libPkg.exists() && libPkg.list() != null){
+                for (String p: libPkg.list()){
+                    if (p.endsWith(".jar")){
+                        libPath.add(libPkg.getAbsolutePath()+"/"+p);
+                    }
+                }
+            }
+            libPkg = new File(projectDir.getAbsolutePath()+"/"+project+"/build/lib/");
+            if (libPkg.exists() && libPkg.list() != null){
+                for (String p: libPkg.list()){
+                    if (p.endsWith(".jar")){
+                        libPath.add(libPkg.getAbsolutePath()+"/"+p);
+                    }
+                }
+            }
+        } else if (PathUtils.projectName.equals("ACCUMULO") || PathUtils.projectName.equals("CAMEL")
+                || PathUtils.projectName.equals("MNG") || PathUtils.projectName.equals("OAK")) {
+            String libStr = "/" + PathUtils.module + "/target/dependency/";
+
+            File libPkg = new File(projectDir.getAbsolutePath()+"/"+project+libStr);
+            if (libPkg.exists() && libPkg.list() != null){
+                for (String p: libPkg.list()){
+                    if (p.endsWith(".jar")){
+                        libPath.add(libPkg.getAbsolutePath()+"/"+p);
+                    }
                 }
             }
         }
-        libPkg = new File(projectDir.getAbsolutePath()+"/"+project+"/build/lib/");
-        if (libPkg.exists() && libPkg.list() != null){
-            for (String p: libPkg.list()){
-                if (p.endsWith(".jar")){
-                    libPath.add(libPkg.getAbsolutePath()+"/"+p);
-                }
-            }
-        }
+
+
         return project;
     }
 }

@@ -8,6 +8,7 @@ import javassist.NotFoundException;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -105,8 +106,17 @@ public class TestUtils {
 //            String result = ShellUtils.shellRunGobbler(Arrays.asList("cd project\n", "cd " + projectName + "\n",
 //                    "JAVA_HOME=/usr/local/development/jdk1.7.0_79" + "\n",
 //                    "ant test" + "\n", "cd ../.." + "\n", "echo \"\" > " + ShellUtils.LOCK_FILE));
+            String command = "";
+            if (PathUtils.projectName.equals("MATH")) {
+                command = "mvn test";
+            } else if (PathUtils.projectName.equals("ACCUMULO") || PathUtils.projectName.equals("CAMEL")
+                    || PathUtils.projectName.equals("MNG") || PathUtils.projectName.equals("OAK")) {
+                command = "mvn test -pl " + PathUtils.module + "/";
+            } else {
+                throw new RuntimeException("Unknown project name. Project name: " + PathUtils.projectName);
+            }
             String result = ShellUtils.shellRunGobbler(Arrays.asList("cd project\n", "cd " + projectName + "\n",
-                    "mvn test"));
+                    command));
             return result;
         } catch (IOException e) {
             return "";
